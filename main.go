@@ -19,10 +19,12 @@ func main() {
 		panic(err)
 	}
 
-	bus.RegisterTopics("do.something", "do.print")
+	bus.RegisterTopics("do.something", "do.print", "do.construct")
 
 	bus.RegisterHandler("do.something.worker", handlers.DoSomething, "do.something")
 	bus.RegisterHandler("do.print.worker", handlers.DoPrint, "do.print")
+	constructor := handlers.NewConstruct("dbstring", "awsstring")
+	bus.RegisterHandler("do.construct.worker", constructor.Handle(), "do.construct")
 
 	done := make(chan bool, 1)
 	quit := make(chan os.Signal, 1)
