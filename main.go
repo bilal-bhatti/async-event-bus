@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/bilal-bhatti/async-event-bus/concur"
+	"github.com/bilal-bhatti/async-event-bus/events"
 	"github.com/bilal-bhatti/async-event-bus/handlers"
-	"github.com/bilal-bhatti/async-event-bus/models"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 	ctx := context.Background()
 
 	for i := 0; i < 15; i++ {
-		e := models.NewSomething()
+		e := events.NewSomething()
 		fmt.Printf("emit:  %s\n", e.ToString())
 		err := bus.Emit(ctx, "do.something", e)
 		if err != nil {
