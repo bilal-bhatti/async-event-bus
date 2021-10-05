@@ -9,7 +9,7 @@ import (
 	"github.com/mustafaturan/bus/v3"
 )
 
-func DoPrint(ctx context.Context, bus concur.AsyncBus, e bus.Event) {
+func DoPrint(ctx context.Context, emit concur.Emitter, e bus.Event) {
 	t := e.Data.(events.Print)
 	fmt.Printf("print: %s\n", t.ToString())
 }

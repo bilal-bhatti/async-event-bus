@@ -10,7 +10,7 @@ import (
 	"github.com/mustafaturan/bus/v3"
 )
 
-func DoSomething(ctx context.Context, bus concur.AsyncBus, e bus.Event) {
+func DoSomething(ctx context.Context, emitter concur.Emitter, e bus.Event) {
 	t := e.Data.(events.Something)
 
 	defer func() {
@@ -29,13 +29,13 @@ func DoSomething(ctx context.Context, bus concur.AsyncBus, e bus.Event) {
 	fmt.Printf("awake: %s\n", t.ToString())
 
 	if t.TimeToComplete == 5 || t.TimeToComplete == 10 || t.TimeToComplete == 15 {
-		err := bus.Emit(ctx, "do.something", events.NewSomethingWithParent(t))
+		err := emitter.Emit(ctx, "do.something", events.NewSomethingWithParent(t))
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	err := bus.Emit(ctx, "do.print", events.NewPrint(fmt.Sprintf("%v", t.ToString())))
+	err := emitter.Emit(ctx, "do.print", events.NewPrint(fmt.Sprintf("%v", t.ToString())))
 	if err != nil {
 		panic(err)
 	}

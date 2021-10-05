@@ -54,17 +54,23 @@ func (b AsyncBus) RegisterTopics(topics ...string) {
 	b.bus.RegisterTopics(topics...)
 }
 
-func (b AsyncBus) RegisterHandler(name string, handler func(context.Context, AsyncBus, bus.Event), matcher string) {
+type Handler func(context.Context, Emitter, bus.Event)
+
+func (b AsyncBus) RegisterHandler(name string, handler Handler, matcher string) {
 	b.bus.RegisterHandler(name, bus.Handler{Handle: b.wrap(handler), Matcher: matcher})
 }
 
-func (b AsyncBus) wrap(handler func(context.Context, AsyncBus, bus.Event)) func(ctx context.Context, event bus.Event) {
+func (b AsyncBus) wrap(handler Handler) func(ctx context.Context, event bus.Event) {
 	return func(ctx context.Context, event bus.Event) {
 		go func() {
 			defer b.wg.Done()
 			handler(ctx, b, event)
 		}()
 	}
+}
+
+type Emitter interface {
+	Emit(ctx context.Context, topic string, data interface{}) error
 }
 
 func (b AsyncBus) Emit(ctx context.Context, topic string, data interface{}) error {
